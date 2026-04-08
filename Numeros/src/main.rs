@@ -163,6 +163,38 @@ impl Numero {
     parte_izquierda * divisor * 10 + digito * divisor + parte_derecha
 }
 
+    fn obtener_digito_posicion(&self, posicion: u64) -> u64 {
+        let total_cifras = self.cantidad_digitos();
+        if posicion < 1 || posicion > total_cifras {
+            return 0;
+        }
+        let mut divisor: u64 = 1;
+        for _ in 0..(total_cifras - posicion) {
+            divisor = divisor * 10;
+        }
+        (self.valor / divisor) % 10
+    }
+
+    fn buscar_digito(&self, digito: u64) -> u64 {
+        let mut num = self.valor;
+        let mut posicion = 1;
+        let total_cifras = self.cantidad_digitos();
+        let mut temp = num;
+        let mut digitos = Vec::new();
+
+        while temp > 0 {
+            digitos.push(temp % 10);
+            temp /= 10;
+        }
+
+        for i in 0..digitos.len() {
+            if digitos[digitos.len() - 1 - i] == digito {
+                return (i + 1) as u64;
+            }
+        }
+        0
+    }
+
 
 
 /*     fn fibonacci(&self) -> u64 {
