@@ -11,8 +11,13 @@ impl Cadena {
             caracteres: ['\0'; N],
         }
     }
-}
+    fn obtener_longitud(&self) -> usize {
+        self.longitud
+    }
+    fn add_char(&self, c:char){
 
+    }
+}
 fn leer_cadena() -> String {
     let mut entrada = String::new();
     io::stdin().read_line(&mut entrada).expect("Error al leer");

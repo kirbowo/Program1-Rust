@@ -1,4 +1,3 @@
-//use core::num;
 use std::io::{self, Write};  // Para leer entrada y mostrar el menú sin salto de línea
 struct Numero {
     valor: u64
@@ -53,16 +52,20 @@ impl Numero {
     }
 
     fn invertir(&self) -> u64 {
-        let mut num: u64 = self.valor;
-        let mut invertido: u64 = 0;
-
-        while num > 0 {
-            let digito: u64 = num % 10;
-            invertido = invertido * 10 + digito;
-            num /= 10;
+        if self.valor < 10 {
+            return self.valor;
         }
+        else {
+            let mut num = self.valor;
+            let mut invertido = 0;
 
-        invertido
+            while num > 0 {
+                let digito = num % 10;
+                invertido = invertido * 10 + digito;
+                num /= 10;
+            }
+            invertido
+        }
     }
 
     fn es_capicua(&self) -> bool {
@@ -70,43 +73,44 @@ impl Numero {
     }
 
     fn elevado(&self, base: u64, exp: u64) -> u64 {
-        let mut conta = 1;
+        let mut resultado: u64 = 1;
         for _ in 0..exp {
-            conta *= base;
+            resultado = resultado * base;
         }
-        conta
+        resultado
     }
 
     fn es_armstrong(&self) -> bool {
-        let mut num = self.valor;
-        let digitos = self.cantidad_digitos();
+        let mut n = self.valor;
         let mut suma = 0;
+        let expo: u64 = self.cantidad_digitos();
 
-        while num > 0 {
-            let digito = num % 10;
-            suma += self.elevado(digito, digitos as u64);
-            num /= 10;
+        while n > 0 {
+            let digito = n % 10;
+            suma = suma + self.elevado(digito, expo);
+            n /= 10; // esto es igual a: n = n / 10;
         }
-        suma  == self.valor
-    }
-    fn cant_dig_par(&self) -> u32 {
-        let mut count = 0;
+        suma == self.valor
+    } 
+
+    //funcion que devuelva la cantidad de digitos pares que contiene un numero, ej:
+    //341 = 1 digito par - 379 = 0 digitos pares - 482 = 3 digitos pares.
+    fn cant_dig_pares(&self) -> u64 {
         let mut num = self.valor;
+        let mut cont = 0;
 
         while num > 0 {
             let digito = num % 10;
             if digito % 2 == 0 {
-                count += 1;
+                cont += 1;
             }
             num /= 10;
         }
-
-        count
+        cont
     }
+
     fn raiz_digital(&self) -> u64 {
-        //La raiz digital, es aquel que sumando sus digitos, se obtiene un nuevo valor.
-        //este valor tambien se debe sumar sus digitos, hasta que el valor sea de 1 cifra.
-        let mut n = self.valor;
+        let mut n: u64 = self.valor;
         while n >= 10 {
             let mut suma = 0;
             let mut temp = n;
@@ -116,87 +120,83 @@ impl Numero {
             }
             n = suma;
         }
-        return n;
+        n
     }
-    //1.- Collatz: Si el número es par, se divide entre 2; si es impar, se multiplica por 3 y se suma 1.
-    //    Repetir hasta llegar a 1. 
-    //    Mostrar los pasos necesarios y otro que encuentre el valor maximo alcanzado.
 
-    fn conjetura_collats(&self) -> u32 {
-        let mut cont: u32 = 0;
-        let mut num : u64 = self.valor;
+    //1.- La conjetura de Collatz: Si el número es par, divídelo entre 2; si es impar, multiplícalo por 3
+    //y súmale 1. Repetir hasta llegar a 1. Implementar un método que cuente los pasos necesarios y otro que
+    //encuentre el valor máximo alcanzado durante la secuencia.
+    
+    fn collatz(&self) -> (u64, u64) {
+    let mut n = self.valor;
+    let mut pasos: u64 = 0;
+    let mut maximo: u64 = 0;
 
-        while num != 1 {
-            if num % 2 == 0 {
-                num /= 2;
-            }
-            else {
-                num = num * 3 + 1;
-            }
-            cont += 1;
-            }
-            cont
+      while n != 1 {
+        if n % 2 == 0 {
+            n = n / 2;
+        } else {
+            n = n * 3 + 1;
         }
-    fn valor_max_collatz(&self) -> u64 {
-        let mut num : u64 = self.valor;
-        let mut max: u64 = 0;
-
-        while num != 1 {
-            if num % 2 == 0 {
-                num /= 2;
-            }
-            else {
-                num = num * 3 + 1;
-            }
-            if num > max {
-                max = num;
-            }
+        pasos += 1;
+        if n > maximo {
+            maximo = n;
         }
-        max
+      }
+      (pasos,  maximo)
     }
-//      13 es impar → 13*3+1=40
-//      40 es par → 40/2=20
-//      20 es par → 20/2=10
-//      10 es par → 10/2=5
-//      5 es impar → 5*3+1=16
-//      16 es par → 16/2=8
-//      8 es par → 8/2=4
-//      4 es par → 4/2=2
-//      2 es par → 2/2=1
-//      Pasos: 9, Valor máximo: 40'
-    fn leer_linea(&self) -> String {
-    let mut entrada = String::new();
-    io::stdin().read_line(&mut entrada).expect("Error al leer");
-    entrada.trim().to_string()
+
+
+    //2.- Insertar un digito en una posicion
+    fn insertar_digito(&self, digito: u64, posicion: u64) -> u64 {
+    let total_cifras = self.cantidad_digitos();
+
+    let mut divisor: u64 = 1;
+
+    for _ in 0..(total_cifras - posicion + 1) {  // ← +1 para que la posición empiece en 1
+        divisor = divisor * 10;
+    }
+
+    let parte_izquierda = self.valor / divisor;
+    let parte_derecha   = self.valor % divisor;
+
+    parte_izquierda * divisor * 10 + digito * divisor + parte_derecha
 }
 
-//2.- Insertar un digito en una pos,ej:
-//    361, quiero insertar el digito 2 en la 2da posicion
-//    3261     
-
-    fn insertar_digito(&self) -> u64 {
-        let mut num: u64 = self.valor;
-        let cant_dig: u64 = self.cantidad_digitos();
-        println!("  Ingresa el dígito a insertar:");
-        let digito = self.leer_linea().parse::<u64>().expect("Error al leer el digito");
-        println!("  Ingresa la posición (0 para el final):");
-        let pos : u64 = self.leer_linea().parse::<u64>().expect("Error al leer la posicion");
-        let mut cont: u64 = 0;
-        while pos > cont {
-            num /= 10;
-            cont += 1;
+    fn obtener_digito_posicion(&self, posicion: u64) -> u64 {
+        let total_cifras = self.cantidad_digitos();
+        if posicion < 1 || posicion > total_cifras {
+            return 0;
         }
-        if cant_dig < pos {
-            println!("  Posición inválida. El número tiene solo {} dígitos.", cant_dig);
-            return self.valor;
+        let mut divisor: u64 = 1;
+        for _ in 0..(total_cifras - posicion) {
+            divisor = divisor * 10;
         }
-        else{
-        let parte1 = num * 10 + digito;
-        let parte2 = self.valor % self.elevado(10, pos);
-        let resultado = parte1 * self.elevado(10, pos) + parte2;
-        resultado
-        }
+        (self.valor / divisor) % 10
     }
+
+    fn buscar_digito(&self, digito: u64) -> u64 {
+        let mut num = self.valor;
+        let mut posicion = 1;
+        let total_cifras = self.cantidad_digitos();
+        let mut temp = num;
+        let mut digitos = Vec::new();
+
+        while temp > 0 {
+            digitos.push(temp % 10);
+            temp /= 10;
+        }
+
+        for i in 0..digitos.len() {
+            if digitos[digitos.len() - 1 - i] == digito {
+                return (i + 1) as u64;
+            }
+        }
+        0
+    }
+
+
+
 /*     fn fibonacci(&self) -> u64 {
         let mut a: u64 = 0;
         let mut b: u64 = 1;
@@ -212,24 +212,6 @@ impl Numero {
 
     fn resetear(&mut self, nuevo: u64) {
         self.valor = nuevo;
-    }
-    //funcion que elimine un digito dada una posicion. empezando desde la izquierda.
-    //4675 queremos eliminar el digito numero 3
-    /**/
-    //fn buscar_digito(&self)-> u64{
-
-    //}
-    //obtener digito: dada una posicion, devolver el digito
-    //465, quiero obtener el digito en la posicion 2, devuelve 6
-    /*1ro el usuario introduce una pos
-    2do debemos saber cuantos digitos tiene el numero
-    3do debemos llegar a ese digito
-    4to devolvemos el digito encontrado*/
-    fn obtener_digito(&self, posicion: u64) -> u64 {
-        let digitos = self.cantidad_digitos();
-        let medio = self.elevado( 10,  digitos - posicion);
-        let resultado = (self.valor / medio) % 10;
-        resultado
     }
 }
 // Función para leer una línea de entrada del usuario
@@ -251,15 +233,13 @@ fn mostrar_menu(n: &Numero) {
     println!("║  1. ¿Es par?                     ║");
     println!("║  2. ¿Es primo?                   ║");
     println!("║  3. Cantidad de dígitos          ║");
-    println!("║  4. Invertir                     ║");    
-    println!("║  5. ¿Es capicúa?                 ║");
+    println!("║  4. Invertir                     ║");
+    println!("║  5. Es capicua?                  ║");    
     println!("║  6. ¿Es Armstrong?               ║");
-    println!("║  7. Cantidad dígitos pares       ║");
-    println!("║  8. Raíz digital                 ║");
-    println!("║  9. Pasos Collatz                ║");
-    println!("║ 10. Valor máximo Collatz         ║");
-    println!("║ 11. Insertar dígito              ║");
-    println!("║ 12. Obtener dígito               ║");
+    println!("║  7. Cantidad Dig Par             ║");
+    println!("║  8. Raiz Digital                 ║");
+    println!("║  9. Collatz                      ║");
+    println!("║  10. Insertar dígito             ║");
     println!("╠══════════════════════════════════╣");
     println!("║  0. Ingresar nuevo número        ║");
     println!("║  Q. Salir                        ║");
@@ -294,14 +274,58 @@ fn main() {
             "2" => println!("  ¿Es primo?        → {}", n.es_primo()),
             "3" => println!("  Cantidad Digitos: → {}", n.cantidad_digitos()),
             "4" => println!("  Invertir:         → {}", n.invertir()),
-            "5" => println!("  ¿Es capicúa?      → {}", n.es_capicua()),
+            "5" => println!("  Es capicua?:      → {}", n.es_capicua()),
             "6" => println!("  ¿Es Armstrong?    → {}", n.es_armstrong()),
-            "7" => println!("  Cant. Digitos Par → {}", n.cant_dig_par()),
-            "8" => println!("  Raíz Digital:     → {}", n.raiz_digital()),
-            "9" => println!("  Pasos Collatz:    → {}", n.conjetura_collats()),
-            "10" => println!("  Valor Máx Collatz: → {}", n.valor_max_collatz()),
-            "11" => println!("  Insertar dígito:  → {}", n.insertar_digito()),
-            "12" => println!("  Obtener dígito:   → {}", n.obtener_digito(/*u64*/)),
+            "7" => println!("  Cantidad de Digitos Pares es    → {}", n.cant_dig_pares()),
+            "8" => println!("  La raiz gitital es    → {}", n.raiz_digital()),
+            "9" => {
+                   let (pasos, maximo) = n.collatz();
+                    println!("  Collatz → pasos: {}, máximo: {}", pasos, maximo);
+            }
+            "12" => {
+    println!("  Ingresa la posición (1 = izquierda):");
+    match leer_numero() {
+        Some(posicion) if posicion >= 1 && posicion <= n.cantidad_digitos() as u64 => {
+            let resultado = n.obtener_digito_posicion(posicion);
+            println!("  Dígito en posición {}: → {}", posicion, resultado);
+        }
+        Some(_) => println!("  Posición fuera de rango (1 a {}).", n.cantidad_digitos()),
+        None    => println!("  Posición inválida."),
+    }
+}
+
+"13" => {
+    println!("  Ingresa el dígito a buscar (0-9):");
+    match leer_numero() {
+        Some(digito) if digito <= 9 => {
+            let resultado = n.buscar_digito(digito);
+            if resultado == 0 {
+                println!("  El dígito {} no existe en el número.", digito);
+            } else {
+                println!("  Dígito {} encontrado en posición: → {}", digito, resultado);
+            }
+        }
+        Some(_) => println!("  El dígito debe estar entre 0 y 9."),
+        None    => println!("  Dígito inválido."),
+    }
+}
+            "10" => {
+                println!("  Ingresa el dígito a insertar (0-9):");
+                match leer_numero() {
+                    Some(digito) if digito <= 9 => {
+                        println!("  Ingresa la posición (1 = izquierda):");
+                        match leer_numero() {
+                            Some(posicion) => {
+                                let resultado = n.insertar_digito(digito, posicion);
+                                println!("  Insertar dígito {} en posición {}: → {}", digito, posicion, resultado);
+                            }
+                            None => println!("  Posición inválida."),
+                        }
+                    }
+                    Some(_) => println!("  El dígito debe estar entre 0 y 9."),
+                    None    => println!("  Dígito inválido."),
+                }
+            }
             "0" => {
                 println!("  Ingresa el nuevo número:");
                 match leer_numero() {
