@@ -1,5 +1,5 @@
 use std::io::{self, Write};
-
+use std::ops::RangeTo;
 const N: usize = 100;
 
 struct Cadena {
@@ -26,9 +26,26 @@ impl Cadena {
         }
     }
 
-    /*fn obt_char(&self, posicion: usize) -> char {
-        
-    }*/
+    fn obt_char(&self, posicion: usize) -> char {
+        //let long = self.longitud;
+    if posicion > 0 && posicion < self.longitud {
+        self.caracteres[posicion-1]}
+        else {
+        '\0'
+        }    
+    }
+    fn contar_char(&self, c: char) -> u32{
+        //devolver la cantidad de veces que aparece en la cadena
+        let mut recorrido =0; 
+        for i in 0..self.longitud {
+            if self.caracteres[i] == c {
+                recorrido +=1
+            }
+        }
+        recorrido
+    }
+    
+    
 
     // limpia la cadena para poder ingresar una nueva
     fn limpiar(&mut self) {
@@ -73,7 +90,8 @@ fn mostrar_menu(c: &Cadena) {
     println!("║  1. Ingresar nueva cadena        ║");
     println!("║  2. Mostrar cadena               ║");
     println!("║  3. Longitud                     ║");
-    //println!("║  4. Obtener carácter (posición)  ║");
+    println!("║  4. Obtener carácter (posición)  ║");
+    println!("║  5. Contar apariciones de un char║");
     println!("╠══════════════════════════════════╣");
     println!("║  Q. Salir                        ║");
     println!("╚══════════════════════════════════╝");
@@ -114,7 +132,7 @@ fn main() {
 
             "3" => println!("  Longitud: → {}", c.obt_longitud()),
 
-            /*"4" => {
+            "4" => {
                 println!("  Ingresa la posición (1 = izquierda):");
                 match leer_numero() {
                     Some(pos) if pos >= 1 && pos <= c.obt_longitud() => {
@@ -123,7 +141,20 @@ fn main() {
                     Some(_) => println!("  Posición fuera de rango (1 a {}).", c.obt_longitud()),
                     None    => println!("  Posición inválida."),
                 }
-            } */
+            }
+            "5"=> {
+                println!("  Ingresa el caracter a buscar");
+                let entrada = leer_linea();
+                match entrada.chars().next(){
+                    Some(ch) => {
+                        let resultado = c.contar_char(ch);
+                        println!(" '{}' aparece {} veces",ch,resultado);
+                    }
+                    None =>println!(" No ingresaste ningun caracter")
+                }
+            
+                }
+            
 
             "q" | "Q" => { println!("\n  Hasta luego.\n"); break; }
             _          => println!("  Opción no válida."),
