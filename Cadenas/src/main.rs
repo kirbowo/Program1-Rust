@@ -27,26 +27,54 @@ impl Cadena {
     }
 
     fn obt_char(&self, posicion: usize) -> char {
-        //let long = self.longitud;
-    if posicion > 0 && posicion < self.longitud {
-        self.caracteres[posicion-1]}
-        else {
-        '\0'
-        }    
+        //dada una posicion, devolver el caracter en esa posicion
+        if posicion > 0 && posicion <= self.longitud {
+            self.caracteres[posicion-1]
+        } else {
+            '\0'
+        }
     }
-    fn contar_char(&self, c: char) -> u32{
-        //devolver la cantidad de veces que aparece en la cadena
-        let mut recorrido =0; 
+
+    fn cant_apar_char(&self, c: char) -> u32 {
+        //dado un caracter, devolver la cantidad de veces
+        //que aparece en la cadena
+        let mut contador = 0;
         for i in 0..self.longitud {
             if self.caracteres[i] == c {
-                recorrido +=1
-            }
+                contador += 1
+            }            
         }
-        recorrido
+        contador
     }
-    
-    
 
+   /*fn mas_repetido(&self) -> char {
+        //Devuelve el caracter que mas veces se repite.
+        //si todos aparecen 1 sola vezm, devuelve el 1ro
+   } */
+
+    /*fn conertir_mayuscula(&self) {
+    }*/
+
+    /*fn invertir(&self) {
+    }*/    
+
+    /*fn es_palindromo(&self) -> bool {
+    }*/
+
+// NUEVOS EJERCICIOS    
+    
+    /*fn reemplazar_pos_car(&self, pos, c) {
+    
+    }*/
+
+    /*fn reemplazar_car(&self, c, x) {
+    
+    }*/
+
+    /*fn cont_voc_cons(&self) -> u8 {
+    
+    }*/
+    
     // limpia la cadena para poder ingresar una nueva
     fn limpiar(&mut self) {
         self.longitud = 0;
@@ -91,7 +119,11 @@ fn mostrar_menu(c: &Cadena) {
     println!("║  2. Mostrar cadena               ║");
     println!("║  3. Longitud                     ║");
     println!("║  4. Obtener carácter (posición)  ║");
-    println!("║  5. Contar apariciones de un char║");
+    println!("║  5. Cant Repetido carácter       ║");
+    println!("║  6. Char más repetido            ║");  // ← nuevo
+    println!("║  7. Convertir a mayúsculas       ║");  // ← nuevo
+    println!("║  8. Invertir cadena              ║");  // ← nuevo
+    println!("║  9. ¿Es palíndromo?              ║");  // ← nuevo
     println!("╠══════════════════════════════════╣");
     println!("║  Q. Salir                        ║");
     println!("╚══════════════════════════════════╝");
@@ -132,7 +164,7 @@ fn main() {
 
             "3" => println!("  Longitud: → {}", c.obt_longitud()),
 
-            "4" => {
+           "4" => {
                 println!("  Ingresa la posición (1 = izquierda):");
                 match leer_numero() {
                     Some(pos) if pos >= 1 && pos <= c.obt_longitud() => {
@@ -141,20 +173,48 @@ fn main() {
                     Some(_) => println!("  Posición fuera de rango (1 a {}).", c.obt_longitud()),
                     None    => println!("  Posición inválida."),
                 }
-            }
-            "5"=> {
-                println!("  Ingresa el caracter a buscar");
-                let entrada = leer_linea();
-                match entrada.chars().next(){
-                    Some(ch) => {
-                        let resultado = c.contar_char(ch);
-                        println!(" '{}' aparece {} veces",ch,resultado);
+            } 
+
+            "5" => {
+                println!("  Ingresa el caracter:");
+                let entrada =leer_linea();
+                match entrada.chars().next() {
+                    Some(carac) => {
+                        let resultado = c.cant_apar_char(carac);
+                        println!(" '{}' aparece {} vez/veces", carac, resultado);                        
                     }
-                    None =>println!(" No ingresaste ningun caracter")
+                    None => println!("No hay caracter")
                 }
-            
+            }
+
+            "6" => {
+                if c.obt_longitud() == 0 {
+                    println!("  La cadena está vacía.");
+                } else {
+                    let resultado = c.mas_repetido();
+                    println!("  El carácter que más se repite es: '{}'", resultado);
                 }
+            }
+
+            "7" => {
+                c.convertir_mayusculas();
+                print!("  Cadena convertida: ");
+                c.mostrar();
+            }
+
+            "8" => {
+                c.invertir();
+                print!("  Cadena invertida: ");
+                c.mostrar();
+            }
             
+            "9" => {
+                if c.es_palindromo() {
+                    println!("  Sí es palíndromo.");
+                } else {
+                    println!("  No es palíndromo.");
+                }
+            }
 
             "q" | "Q" => { println!("\n  Hasta luego.\n"); break; }
             _          => println!("  Opción no válida."),
