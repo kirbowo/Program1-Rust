@@ -64,15 +64,30 @@ impl Cadena {
 // NUEVOS EJERCICIOS    
     
     /*fn reemplazar_pos_car(&self, pos, c) {
-    
+       //Recibe una posición y un caracter. Se debe reemaplazar el caracter en esa posición por el nuevo caracter.
     }*/
 
     /*fn reemplazar_car(&self, c, x) {
-    
+       //Recibe 2 caracteres. El primero es uno que contiene la cadena, que debe ser reemplazdo por el otro caracter
     }*/
 
     /*fn cont_voc_cons(&self) -> u8 {
-    
+       //Contar la cantidad de vocales y consonantes que contiene la cadena.
+    }*/
+
+    //MAS EJERCICIOS
+
+    /*fn eliminar_pos(& mut self, pos:usize) {
+        //Dada un posicion, eliminar el caracter en esa posicion, a travez de intercambio.
+        //"Hola como va" pos = 7 Result = "Hola cmo va" (longitud reduce)
+    }*/
+
+    /*fn obtener_subcadena(&self, inicio: usize, fin: usize) -> Cadena {
+
+        // Cadena::new()
+        // El usuario da 2 posiciones, 1 es donde inicia y la otra es donde finaliza la nueva cadena.
+        //"Hola como van todos" inicio = 2 fin = 8
+        //"ola com"
     }*/
     
     // limpia la cadena para poder ingresar una nueva
@@ -120,10 +135,15 @@ fn mostrar_menu(c: &Cadena) {
     println!("║  3. Longitud                     ║");
     println!("║  4. Obtener carácter (posición)  ║");
     println!("║  5. Cant Repetido carácter       ║");
-    println!("║  6. Char más repetido            ║");  // ← nuevo
-    println!("║  7. Convertir a mayúsculas       ║");  // ← nuevo
-    println!("║  8. Invertir cadena              ║");  // ← nuevo
-    println!("║  9. ¿Es palíndromo?              ║");  // ← nuevo
+    println!("║  6. Char más repetido            ║");
+    println!("║  7. Convertir a mayúsculas       ║");
+    println!("║  8. Invertir cadena              ║");
+    println!("║  9. ¿Es palíndromo?              ║");
+    println!("║  10. Reemplazar char (posición)  ║");
+    println!("║  11. Reemplazar char (por otro)  ║");
+    println!("║  12. Vocales y consonantes       ║");
+    println!("║  13. Extraer subcadena           ║");
+    println!("║  14. Eliminar carácter (posición)║");
     println!("╠══════════════════════════════════╣");
     println!("║  Q. Salir                        ║");
     println!("╚══════════════════════════════════╝");
@@ -216,8 +236,91 @@ fn main() {
                 }
             }
 
+            "10" => {
+                println!("  Ingresa la posición (1 = izquierda):");
+                match leer_numero() {
+                    Some(pos) if pos >= 1 && pos <= c.obt_longitud() => {
+                    println!("  Ingresa el nuevo carácter:");
+                    let entrada = leer_linea();
+                    match entrada.chars().next() {
+                        Some(nuevo) => {
+                            c.reemplazar_en_posicion(pos, nuevo);
+                            print!("  Cadena resultante: ");
+                            c.mostrar();
+                        }
+                        None => println!("  No ingresaste ningún carácter."),
+                    }
+                }
+                    Some(_) => println!("  Posición fuera de rango (1 a {}).", c.obt_longitud()),
+                    None    => println!("  Posición inválida."),
+                }
+            }
+
+            "11" => {
+                println!("  Ingresa el carácter a reemplazar:");
+                let entrada1 = leer_linea();
+                match entrada1.chars().next() {
+                    Some(viejo) => {
+                        println!("  Ingresa el carácter nuevo:");
+                        let entrada2 = leer_linea();
+                        match entrada2.chars().next() {
+                            Some(nuevo) => {
+                                c.reemplazar(viejo, nuevo);
+                                print!("  Cadena resultante: ");
+                                c.mostrar();
+                            }
+                            None => println!("  No ingresaste el carácter nuevo."),
+                        }
+                    }
+                    None => println!("  No ingresaste ningún carácter."),
+                }
+            }
+            
+            "12" => {
+                let (vocales, consonantes) = c.contar_vocales_consonantes();
+                println!("  Vocales:      {}", vocales);
+                println!("  Consonantes:  {}", consonantes);
+            }
+
+            "13" => {
+                if c.obt_longitud() == 0 {
+                    println!(" La cadena está vacía.");
+                } else {
+                    println!(" Ingresa la posición de inicio (1-based):");
+                    if let Some(inicio) = leer_numero() {
+                        println!(" Ingresa la cantidad de caracteres a extraer:");
+                        if let Some(long) = leer_numero() {
+                            let sub = c.subcadena(inicio, long);
+                            print!(" Subcadena extraída: ");
+                            sub.mostrar();
+                        } else {
+                            println!(" Cantidad inválida.");
+                        }
+                    } else {
+                        println!(" Posición inválida.");
+                    }
+                }
+            }
+
+            "14" => {
+                if c.obt_longitud() == 0 {
+                    println!(" La cadena está vacía.");
+                } else {
+                    println!(" Ingresa la posición a eliminar (1-based):");
+                    match leer_numero() {
+                        Some(pos) if pos >= 1 && pos <= c.obt_longitud() => {
+                            c.eliminar_en_posicion(pos);
+                            print!(" Cadena resultante: ");
+                            c.mostrar();
+                        }
+                        Some(_) => println!(" Posición fuera de rango (1 a {}).", c.obt_longitud()),
+                        None => println!(" Posición inválida."),
+                    }
+                }
+            }
+            
             "q" | "Q" => { println!("\n  Hasta luego.\n"); break; }
-            _          => println!("  Opción no válida."),
+                        _          => println!("  Opción no válida."),
+            }
         }
-    }
 }
